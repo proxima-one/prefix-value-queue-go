@@ -63,6 +63,8 @@ type BasicMongoRepository interface {
 So you can implement only `GetCollection(string)` method in your Mongo and create `PrefixMongoRepository`
 that extends `BasicMongoRepository` to `Repository`.
 
+<b>It is HIGHLY recommended to have `group_id_1_timestamp_-1` index in your MongoDB.</b>
+
 ### Combine function
 Combine function is used to calculate new prefix value over last value and new transaction:</br>
 `func(prefix_queue_model.CacheEntry, prefix_queue_model.Transaction) prefix_queue_model.Transaction`</br>

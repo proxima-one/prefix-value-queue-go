@@ -41,10 +41,15 @@ func (repo *PrefixMongoRepository) SaveTransactions(ctx context.Context, transac
 	collection := repo.getCollection()
 	_, err := collection.InsertMany(ctx, transactions, opts)
 	if err != nil {
-		for _, obj := range err.(mongo.BulkWriteException).WriteErrors {
-			if obj.Code == 11000 { // skip duplicates errors
-				continue
+		switch err.(type) {
+		case mongo.BulkWriteException:
+			for _, obj := range err.(mongo.BulkWriteException).WriteErrors {
+				if obj.Code == 11000 { // skip duplicates errors
+					continue
+				}
+				return err
 			}
+		default:
 			return err
 		}
 	}
