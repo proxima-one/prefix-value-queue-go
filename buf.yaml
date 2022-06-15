@@ -1,0 +1,13 @@
+version: v1
+build:
+  excludes:
+    - deploy/node_modules
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
