@@ -32,7 +32,7 @@ func TestQueueWithMemoryRepo(t *testing.T) {
 				value:       0,
 				prefixValue: 0,
 			}
-		}, prefix_queue_model.QueueOptions{
+		}, prefix_queue.QueueOptions{
 			QueueMaxSize:   50,
 			MaxRollbackLen: 1000,
 			BatchLen:       5,

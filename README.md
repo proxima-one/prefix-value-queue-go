@@ -6,6 +6,8 @@ its trading volume in some time frame using only 2 simple DB queries. </br>
 Another example is to count NFT's owned by some account. 
 Or again count number of NFT's transfers of some collection.
 
+Examples can be found in `./test` folder and at https://github.com/proxima-one/token-volume-apis 
+
 ## Concept
 ### Group
 In this library we use concept called Group. It's how you split transactions in independent (in terms of

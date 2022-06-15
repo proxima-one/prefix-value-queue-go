@@ -16,14 +16,14 @@ type PrefixQueue struct {
 	combine            func(prefix_queue_model.CacheEntry, prefix_queue_model.Transaction) prefix_queue_model.Transaction
 	genericTransaction func() prefix_queue_model.Transaction
 
-	options prefix_queue_model.QueueOptions
+	options QueueOptions
 }
 
 func NewPrefixQueue(
 	repo prefix_repository.Repository,
 	combine func(prefix_queue_model.CacheEntry, prefix_queue_model.Transaction) prefix_queue_model.Transaction,
 	genericTransaction func() prefix_queue_model.Transaction,
-	options prefix_queue_model.QueueOptions) *PrefixQueue {
+	options QueueOptions) *PrefixQueue {
 
 	return &PrefixQueue{
 		repo:               repo,
