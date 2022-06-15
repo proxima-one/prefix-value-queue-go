@@ -55,8 +55,8 @@ func (saver *PrefixQueue) FlushQueue(ctx context.Context, onFlush func(prefix_qu
 	transactions := make([]any, 0, saver.options.BatchLen)
 	state := ""
 	var lastTransaction prefix_queue_model.Transaction
+GetTransactions:
 	for len(transactions) < saver.options.BatchLen {
-		stop := false
 		timeout := time.NewTicker(time.Duration(saver.options.FlushTimeoutMs) * time.Millisecond)
 		select {
 		case entry := <-saver.queue:
@@ -77,14 +77,11 @@ func (saver *PrefixQueue) FlushQueue(ctx context.Context, onFlush func(prefix_qu
 				transactions = append(transactions, transaction)
 			}
 		case <-ctx.Done():
-			stop = true
+			timeout.Stop()
+			break GetTransactions
 		case <-timeout.C:
-			stop = true
-		}
-		timeout.Stop()
-
-		if stop {
-			break
+			timeout.Stop()
+			break GetTransactions
 		}
 	}
 	if len(transactions) == 0 {
