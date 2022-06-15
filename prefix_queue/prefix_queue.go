@@ -77,6 +77,7 @@ func (saver *PrefixQueue) FlushQueue(ctx context.Context, onFlush func(prefix_qu
 				transactions = append(transactions, transaction)
 			}
 		case <-ctx.Done():
+			stop = true
 		case <-timeout.C:
 			stop = true
 		}
