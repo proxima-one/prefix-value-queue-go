@@ -1,12 +1,15 @@
 # Prefix value queue helper for Golang
-This library helps to support continuously updating prefix values over some stream.
+This library helps to continuously update prefix values over independent 
+groups in some stream efficiently handling 
+Save & Undo operations and sending transactions in batches.
 
 For example, you can calculate prefix sums of all transactions of some token and get 
 its trading volume in some time frame using only 2 simple DB queries. </br>
 Another example is to count NFT's owned by some account. 
 Or again count number of NFT's transfers of some collection.
 
-Examples can be found in `./test` folder and at https://github.com/proxima-one/token-volume-apis 
+Examples can be found in `./test` and `./example` folders 
+and at https://github.com/proxima-one/token-volume-apis
 
 ## Concept
 ### Group
@@ -76,3 +79,65 @@ Combine function is used to calculate new prefix value over last value and new t
 `GenericTransaction()` function should return empty (zero prefix values etc.) 
 `Transaction` that is generic for new group and is being passed to `GetLastTransactionOfGroup` method
 of Repository.
+
+## Usage
+Let's implement trading volumes over time task.
+
+Here is out simple `Transfer`:
+```
+type Transfer struct {
+	id          string
+	tokenId     string
+	value       int
+	prefixValue int
+}
+```
+And its corresponding methods:
+```
+func (transfer *Transfer) GetId() string { return transfer.id }
+func (transfer *Transfer) GetGroupId() string { return transfer.tokenId }
+func (transfer *Transfer) ToCacheEntry() prefix_queue_model.CacheEntry { return transfer.prefixValue }
+```
+Our GroupId is `tokenId` because we want to get trading volumes of each token independently.
+
+And to calculate next prefix value we only need the last prefix sum and current value so 
+in this case `CacheEntry` is just an `int`. By the word let's implement `combine` function:
+```
+func combine(t1 prefix_queue_model.CacheEntry, t2 prefix_queue_model.Transaction) prefix_queue_model.Transaction {
+	res := *t2.(*Transfer)
+	res.prefixValue = t1.(int) + t2.(*Transfer).value
+	return &res
+}
+```
+
+Generic transfer will just return completely empty transfer as its value and prefixValue 
+are zeroes by default.
+
+Assuming that we have some simple in-memory database we can easily create queue:
+```
+opts := prefix_queue.QueueOptions{
+    QueueMaxSize:   10,
+    MaxRollbackLen: 10,
+    BatchLen:       10,
+    FlushTimeoutMs: 100,
+}
+queue := prefix_queue.NewPrefixQueue(repo, combine, genericTransfer, opts)
+```
+
+Now we can use two main endpoints of queue to save and undo transfers:
+```
+queue.Save(context.Background(),
+    &Transfer{
+        id:      "3",
+        tokenId: "0",
+        value:   7,
+    }, "0x3")
+
+queue.Undo(&Transfer{
+    id:      "3",
+    tokenId: "0",
+    value:   7,
+}, "0x4")
+```
+
+Full code with outputs can be found in `./example` folder.
