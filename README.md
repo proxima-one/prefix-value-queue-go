@@ -105,7 +105,7 @@ in this case `CacheEntry` is just an `int`. By the word let's implement `combine
 ```
 func combine(t1 prefix_queue_model.CacheEntry, t2 prefix_queue_model.Transaction) prefix_queue_model.Transaction {
 	res := *t2.(*Transfer)
-	res.prefixValue = t1.(int) + t2.(*Transfer).value
+	res.prefixValue = t1.(int) + res.value
 	return &res
 }
 ```
