@@ -123,7 +123,7 @@ func (repo *PrefixMongoRepository) GetGroupTransactionsInBounds(
 		return err
 	}
 	cursor.Next(ctx)
-	err = cursor.Decode(&res2)
+	err = cursor.Decode(res2)
 	if err != nil {
 		return err
 	}
