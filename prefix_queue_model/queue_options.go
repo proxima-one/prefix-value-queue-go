@@ -8,4 +8,5 @@ type QueueOptions struct {
 	QueueMaxSize   int
 	MaxRollbackLen int
 	BatchLen       int
+	FlushTimeoutMs int
 }

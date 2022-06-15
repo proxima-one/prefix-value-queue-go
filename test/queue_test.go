@@ -36,6 +36,7 @@ func TestQueueWithMemoryRepo(t *testing.T) {
 			QueueMaxSize:   50,
 			MaxRollbackLen: 1000,
 			BatchLen:       5,
+			FlushTimeoutMs: 100,
 		})
 
 	groupsNumber := 20
