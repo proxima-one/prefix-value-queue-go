@@ -6,7 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"time"
 )
 
 type BasicMongoRepository interface {
@@ -114,8 +113,8 @@ func (repo *PrefixMongoRepository) GetLastTransactionOfGroup(ctx context.Context
 func (repo *PrefixMongoRepository) GetGroupTransactionsInBounds(
 	ctx context.Context,
 	groupId string,
-	start time.Time,
-	end time.Time,
+	start any,
+	end any,
 	res1 prefix_queue_model.Transaction,
 	res2 prefix_queue_model.Transaction) error {
 
