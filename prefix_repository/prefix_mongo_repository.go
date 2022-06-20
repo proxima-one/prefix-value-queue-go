@@ -21,15 +21,38 @@ type PrefixMongoRepository struct {
 }
 
 func NewPrefixMongoRepository(
-	repo BasicMongoRepository,
-	transfersCollectionId, groupBsonTag, timestampBsonTag string) *PrefixMongoRepository {
+	ctx context.Context, repo BasicMongoRepository,
+	transfersCollectionId, groupBsonTag, timestampBsonTag string) (*PrefixMongoRepository, error) {
 
-	return &PrefixMongoRepository{
+	prefixRepo := &PrefixMongoRepository{
 		repo:                  repo,
 		transfersCollectionId: transfersCollectionId,
 		groupBsonTag:          groupBsonTag,
 		timestampBsonTag:      timestampBsonTag,
 	}
+	return prefixRepo, prefixRepo.checkIndex(ctx)
+}
+
+func (repo *PrefixMongoRepository) checkIndex(ctx context.Context) error {
+	cur, err := repo.getCollection().Indexes().List(ctx)
+	if err != nil {
+		return err
+	}
+	var v []struct {
+		Name string
+	}
+	err = cur.All(ctx, &v)
+	if err != nil {
+		return err
+	}
+	ind := repo.groupBsonTag + "_1_" + repo.timestampBsonTag + "_-1"
+	for _, existing := range v {
+		if existing.Name == ind {
+			return nil
+		}
+	}
+	println("WARN: no index", ind, "in collection", repo.transfersCollectionId)
+	return nil
 }
 
 func (repo *PrefixMongoRepository) getCollection() *mongo.Collection {
