@@ -26,6 +26,12 @@ func (transfer *Transfer) ToCacheEntry() prefix_queue_model.CacheEntry {
 	return transfer
 }
 
+func (transfer *Transfer) GetNegative() prefix_queue_model.Transaction {
+	res := *transfer
+	res.value *= -1
+	return &res
+}
+
 func (transfer *Transfer) FromCacheEntry(entry prefix_queue_model.CacheEntry) {
 	entryTransfer := entry.(*Transfer)
 	transfer.id = entryTransfer.id

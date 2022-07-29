@@ -137,7 +137,7 @@ func (repo *PrefixMongoRepository) GetGroupTransactionsInBounds(
 	cursor, err = repo.getCollection().Find(
 		ctx, bson.D{
 			{"$and", []interface{}{
-				bson.D{{repo.timestampBsonTag, bson.D{{"$lt", end}}}},
+				bson.D{{repo.timestampBsonTag, bson.D{{"$lte", end}}}},
 				bson.D{{repo.groupBsonTag, groupId}},
 			}},
 		}, opts)
