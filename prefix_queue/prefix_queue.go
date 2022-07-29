@@ -97,7 +97,7 @@ func (saver *PrefixQueue) GetQueueSize() int { return len(saver.queue) }
 func (saver *PrefixQueue) getLastTransactionOfGroup(ctx context.Context, groupId string) prefix_queue_model.CacheEntry {
 	value, ok := saver.prefixCache[groupId]
 	if ok { // found in cache
-		return value
+		return value.ToCacheEntry()
 	}
 
 	if !saver.repo.DoesGroupExist(ctx, groupId) { // this operation is much faster than GetLastTokenTransaction
